@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics @ KYUEM AI Tutor v2</title>
+<style>
+:root{
+  --bg:#eef6ff;
+  --panel:#ffffff;
+  --ink:#102033;
+  --muted:#5f6f83;
+  --blue:#155da8;
+  --blue-dark:#0d3f76;
+  --blue-soft:#e6f1fc;
+  --line:#d8e5f1;
+  --green:#157347;
+  --orange:#a15c00;
+  --red:#b42318;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:linear-gradient(180deg,#eaf4ff,#ffffff 45%);
+  color:var(--ink);
+}
+.app{
+  max-width:1180px;
+  margin:0 auto;
+  padding:18px;
+}
+.header{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 12px 34px rgba(16,32,51,.08);
+}
+.brand{
+  display:flex;
+  gap:15px;
+  align-items:center;
+}
+.logo{
+  width:54px;
+  height:54px;
+  border-radius:17px;
+  background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:28px;
+  font-weight:800;
+}
+h1{
+  margin:0;
+  font-size:28px;
+  letter-spacing:-.4px;
+}
+.subtitle{
+  margin:7px 0 0;
+  color:var(--muted);
+  line-height:1.5;
+}
+.grid{
+  display:grid;
+  grid-template-columns:310px 1fr;
+  gap:16px;
+  margin-top:16px;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:0 10px 30px rgba(16,32,51,.07);
+}
+.controls{
+  padding:16px;
+}
+label{
+  display:block;
+  font-size:12px;
+  font-weight:700;
+  color:#31506f;
+  margin:12px 0 6px;
+}
+select, input, textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:11px;
+  font-family:inherit;
+  font-size:14px;
+  background:#fff;
+  color:var(--ink);
+  outline:none;
+}
+select:focus, textarea:focus, input:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(21,93,168,.12);
+}
+.helper{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.45;
+  margin-top:10px;
+}
+.modeTabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:12px 0;
+}
+.tab{
+  border:1px solid var(--line);
+  background:#f7fbff;
+  color:#24425f;
+  border-radius:13px;
+  padding:10px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:13px;
+}
+.tab.active{
+  background:var(--blue);
+  color:#fff;
+  border-color:var(--blue);
+}
+.quickTitle{
+  margin:18px 0 8px;
+  font-size:13px;
+  font-weight:800;
+  color:#31506f;
+}
+.chips{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.chip{
+  border:1px solid var(--line);
+  background:var(--blue-soft);
+  color:#174c84;
+  padding:9px 10px;
+  border-radius:13px;
+  cursor:pointer;
+  font-size:13px;
+  line-height:1.35;
+}
+.chat{
+  overflow:hidden;
+}
+.chatHead{
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+  background:#f8fbff;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.chatHead strong{
+  font-size:15px;
+}
+.pill{
+  display:inline-block;
+  background:#fff;
+  border:1px solid var(--line);
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:12px;
+  color:var(--muted);
+}
+.messages{
+  height:520px;
+  overflow-y:auto;
+  padding:17px;
+  background:#fbfdff;
+}
+.msg{
+  max-width:86%;
+  padding:12px 14px;
+  border-radius:17px;
+  margin:0 0 12px;
+  line-height:1.48;
+  white-space:pre-wrap;
+  word-wrap:break-word;
+}
+.user{
+  margin-left:auto;
+  background:var(--blue);
+  color:#fff;
+  border-bottom-right-radius:5px;
+}
+.bot{
+  background:#fff;
+  border:1px solid var(--line);
+  border-bottom-left-radius:5px;
+}
+.system{
+  max-width:100%;
+  text-align:center;
+  color:var(--muted);
+  background:#f3f8fd;
+  border:1px dashed var(--line);
+  font-size:12px;
+}
+.composer{
+  padding:14px;
+  border-top:1px solid var(--line);
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  background:#fff;
+}
+#input{
+  min-height:58px;
+  max-height:160px;
+  resize:vertical;
+}
+button.send{
+  border:0;
+  background:var(--blue);
+  color:#fff;
+  border-radius:14px;
+  padding:0 20px;
+  font-weight:800;
+  cursor:pointer;
+}
+button.send:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+.status{
+  display:none;
+  padding:8px 16px;
+  font-size:12px;
+  color:var(--muted);
+  border-top:1px solid var(--line);
+}
+.error{color:var(--red)}
+.footerNote{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.45;
+  margin-top:12px;
+}
+.toolrow{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.smallBtn{
+  border:1px solid var(--line);
+  background:#fff;
+  color:#31506f;
+  border-radius:999px;
+  padding:8px 10px;
+  font-size:12px;
+  cursor:pointer;
+}
+@media(max-width:860px){
+  .grid{grid-template-columns:1fr}
+  .messages{height:460px}
+}
+@media(max-width:540px){
+  .app{padding:10px}
+  .header{padding:16px}
+  h1{font-size:23px}
+  .composer{grid-template-columns:1fr}
+  button.send{height:46px}
+  .msg{max-width:94%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="header">
+    <div class="brand">
+      <div class="logo">Φ</div>
+      <div>
+        <h1>Physics @ KYUEM AI Tutor</h1>
+        <p class="subtitle">A CAIE A-Level Physics 9702 assistant for students and teachers. Use it for concept explanations, worked examples, practical skills, revision planning, and resource generation.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid">
+    <aside class="card controls">
+      <div class="modeTabs">
+        <button class="tab active" id="studentTab" onclick="setMode('student')">Student Mode</button>
+        <button class="tab" id="teacherTab" onclick="setMode('teacher')">Teacher Mode</button>
+      </div>
+
+      <label for="paper">Focus area</label>
+      <select id="paper">
+        <option value="General CAIE 9702 support">General CAIE 9702 support</option>
+        <option value="Paper 1 Multiple Choice">Paper 1 Multiple Choice</option>
+        <option value="Paper 2 AS Structured Questions">Paper 2 AS Structured Questions</option>
+        <option value="Paper 3 Advanced Practical Skills">Paper 3 Advanced Practical Skills</option>
+        <option value="Paper 4 A2 Structured Questions">Paper 4 A2 Structured Questions</option>
+        <option value="Paper 5 Planning, Analysis and Evaluation">Paper 5 Planning, Analysis and Evaluation</option>
+      </select>
+
+      <label for="topic">Topic</label>
+      <select id="topic">
+        <option value="Any relevant topic">Any relevant topic</option>
+        <option>1 Physical quantities and units</option>
+        <option>2 Kinematics</option>
+        <option>3 Dynamics</option>
+        <option>4 Forces, density and pressure</option>
+        <option>5 Work, energy and power</option>
+        <option>6 Deformation of solids</option>
+        <option>7 Waves</option>
+        <option>8 Superposition</option>
+        <option>9 Electricity</option>
+        <option>10 D.C. circuits</option>
+        <option>11 Particle physics</option>
+        <option>12 Motion in a circle</option>
+        <option>13 Gravitational fields</option>
+        <option>14 Temperature</option>
+        <option>15 Ideal gases</option>
+        <option>16 Thermodynamics</option>
+        <option>17 Oscillations</option>
+        <option>18 Electric fields</option>
+        <option>19 Capacitance</option>
+        <option>20 Magnetic fields</option>
+        <option>21 Alternating currents</option>
+        <option>22 Quantum physics</option>
+        <option>23 Nuclear physics</option>
+        <option>24 Medical physics</option>
+        <option>25 Astronomy and cosmology</option>
+      </select>
+
+      <label for="level">Response style</label>
+      <select id="level">
+        <option value="Clear but concise">Clear but concise</option>
+        <option value="Detailed teaching explanation">Detailed teaching explanation</option>
+        <option value="Exam-focused answer">Exam-focused answer</option>
+        <option value="Worked solution format">Worked solution format</option>
+        <option value="Generate practice questions">Generate practice questions</option>
+      </select>
+
+      <div class="quickTitle">Quick prompts</div>
+      <div class="chips" id="chips"></div>
+
+      <div class="quickTitle">Tools</div>
+      <div class="toolrow">
+        <button class="smallBtn" onclick="clearChat()">Clear chat</button>
+        <button class="smallBtn" onclick="copyLast()">Copy last reply</button>
+      </div>
+
+      <p class="helper">
+        Do not enter private student data, IC numbers, phone numbers, or sensitive information. Use initials or anonymised data for performance discussion.
+      </p>
+    </aside>
+
+    <main class="card chat">
+      <div class="chatHead">
+        <div>
+          <strong id="chatTitle">Student Physics Support</strong>
+          <div class="helper" id="chatSub">Ask questions, revise concepts, and practise A-Level Physics.</div>
+        </div>
+        <span class="pill" id="modePill">Student Mode</span>
+      </div>
+
+      <div class="messages" id="messages"></div>
+      <div class="status" id="status"></div>
+
+      <div class="composer">
+        <textarea id="input" placeholder="Type your question here..."></textarea>
+        <button class="send" id="sendBtn" onclick="sendMessage()">Send</button>
+      </div>
+    </main>
+  </div>
+
+  <p class="footerNote">
+    This assistant supports teaching and revision. It should not replace teacher judgement, official syllabus documents, or student working.
+  </p>
+</div>
+
+<script>
+/*
+IMPORTANT:
+Replace this with your Google Apps Script Web App URL after deploying the backend.
+*/
+const BACKEND_URL = "https://script.google.com/macros/s/xxxxxxxxxxxxxxxx/exec";
+
+let mode = "student";
+let history = [
+  {role:"system", content:"Welcome. Choose Student Mode or Teacher Mode, then ask your Physics question."}
+];
+
+const studentPrompts = [
+  "Explain this topic in simple A-Level language with one example.",
+  "Give me a worked example with formula, substitution, answer and unit.",
+  "Test me with 5 exam-style questions and explain the answers.",
+  "Explain common mistakes students make in this topic.",
+  "Create a 30-minute revision plan for this topic."
+];
+
+const teacherPrompts = [
+  "Create a complete lesson outline with starter, teaching flow, examples and exit ticket.",
+  "Generate 10 CAIE-style questions with answers and mark scheme.",
+  "Create a worksheet with scaffolded questions from easy to challenging.",
+  "Prepare a short intervention plan for students weak in this topic.",
+  "Create slide-by-slide content for this topic."
+];
+
+function setMode(newMode){
+  mode = newMode;
+  document.getElementById("studentTab").classList.toggle("active", mode === "student");
+  document.getElementById("teacherTab").classList.toggle("active", mode === "teacher");
+  document.getElementById("modePill").textContent = mode === "student" ? "Student Mode" : "Teacher Mode";
+  document.getElementById("chatTitle").textContent = mode === "student" ? "Student Physics Support" : "Teacher Resource Support";
+  document.getElementById("chatSub").textContent = mode === "student"
+    ? "Ask questions, revise concepts, and practise A-Level Physics."
+    : "Generate lessons, worksheets, quizzes, intervention materials, and explanations.";
+  renderChips();
+}
+
+function renderChips(){
+  const box = document.getElementById("chips");
+  const prompts = mode === "student" ? studentPrompts : teacherPrompts;
+  box.innerHTML = "";
+  prompts.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "chip";
+    div.textContent = p;
+    div.onclick = () => {
+      const topic = document.getElementById("topic").value;
+      const paper = document.getElementById("paper").value;
+      document.getElementById("input").value = `${p}\n\nFocus: ${paper}\nTopic: ${topic}`;
+      document.getElementById("input").focus();
+    };
+    box.appendChild(div);
+  });
+}
+
+function buildSystemContext(){
+  const topic = document.getElementById("topic").value;
+  const paper = document.getElementById("paper").value;
+  const level = document.getElementById("level").value;
+
+  return `
+You are Physics @ KYUEM AI Tutor, an assistant for CAIE A-Level Physics 9702.
+
+Current mode: ${mode === "student" ? "Student Mode" : "Teacher Mode"}
+Focus area: ${paper}
+Topic: ${topic}
+Response style: ${level}
+
+General rules:
+- Use clear, accurate A-Level Physics.
+- Do not invent facts. If unsure, say what needs checking.
+- For calculations: formula, substitution, answer, unit.
+- For derivations: define symbols and explain assumptions.
+- For practical skills: include variables, controls, apparatus, method, safety where relevant, data table, graph, uncertainty and evaluation.
+- For Paper 1: focus on traps, reasoning and option elimination.
+- For Paper 2 and Paper 4: structure answers like exam solutions.
+- For Paper 3: focus on measurement, uncertainty, graphing and practical technique.
+- For Paper 5: focus on planning, analysis, limitations and improvements.
+- Avoid collecting private student data.
+
+Student Mode:
+- Be supportive but do not just give final answers without explanation.
+- Encourage students to attempt, check units and show working.
+- Use simple language first, then formal physics language.
+
+Teacher Mode:
+- Produce directly usable teaching resources.
+- Include learning objectives, examples, questions and answers where requested.
+- Keep the tone professional and suitable for A-Level students at KYUEM.
+`;
+}
+
+function render(){
+  const box = document.getElementById("messages");
+  box.innerHTML = "";
+  history.forEach(m => {
+    const div = document.createElement("div");
+    div.className = "msg " + (m.role === "user" ? "user" : m.role === "system" ? "system" : "bot");
+    div.textContent = m.content;
+    box.appendChild(div);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+function setStatus(text, isError=false){
+  const s = document.getElementById("status");
+  s.style.display = text ? "block" : "none";
+  s.className = "status" + (isError ? " error" : "");
+  s.textContent = text || "";
+}
+
+async function sendMessage(){
+  const input = document.getElementById("input");
+  const btn = document.getElementById("sendBtn");
+  const text = input.value.trim();
+  if(!text) return;
+
+  if(BACKEND_URL.includes("PASTE_YOUR")){
+    setStatus("Backend URL not set. Deploy the Apps Script backend and paste the Web App URL into BACKEND_URL.", true);
+    return;
+  }
+
+  const topic = document.getElementById("topic").value;
+  const paper = document.getElementById("paper").value;
+  const level = document.getElementById("level").value;
+
+  const enrichedText =
+`Mode: ${mode}
+Focus area: ${paper}
+Topic: ${topic}
+Response style: ${level}
+
+User question:
+${text}`;
+
+  history.push({role:"user", content:text});
+  input.value = "";
+  render();
+
+  btn.disabled = true;
+  setStatus("Thinking...");
+
+  try{
+    const recent = history.filter(m => m.role !== "system").slice(-12);
+    const res = await fetch(BACKEND_URL, {
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({
+        system: buildSystemContext(),
+        messages: [...recent.slice(0,-1), {role:"user", content:enrichedText}]
+      })
+    });
+
+    const raw = await res.text();
+    let data;
+    try{ data = JSON.parse(raw); }catch(e){ throw new Error(raw.slice(0,250)); }
+
+    if(!res.ok || data.error){
+      throw new Error(data.details || data.error || "Backend error");
+    }
+
+    const reply = data.reply || "Sorry, I could not generate a response.";
+    history.push({role:"assistant", content:reply});
+    render();
+    setStatus("");
+  }catch(err){
+    history.push({role:"assistant", content:"Sorry, the chatbot could not connect properly. Please check the Apps Script deployment, API key, and backend URL."});
+    render();
+    setStatus(String(err.message || err), true);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+function clearChat(){
+  history = [{role:"system", content:"Chat cleared. Choose a mode and ask a new Physics question."}];
+  render();
+}
+
+async function copyLast(){
+  const last = [...history].reverse().find(m => m.role === "assistant");
+  if(!last){
+    setStatus("No assistant reply to copy yet.");
+    return;
+  }
+  try{
+    await navigator.clipboard.writeText(last.content);
+    setStatus("Last reply copied.");
+    setTimeout(() => setStatus(""), 1500);
+  }catch(e){
+    setStatus("Copy failed. You can select the text manually.", true);
+  }
+}
+
+document.getElementById("input").addEventListener("keydown", function(e){
+  if(e.key === "Enter" && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+renderChips();
+render();
+</script>
+</body>
+</html>
